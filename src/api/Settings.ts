@@ -116,7 +116,7 @@ const DefaultSettings: Settings = {
     themeNames: {},
     themeActivationModes: {},
     enableReactDevtools: false,
-    mainWindowFrameless: false,
+    mainWindowFrameless: true,
     frameless: false,
     noRoundCorners: false,
     transparent: false,

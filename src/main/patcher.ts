@@ -17,7 +17,7 @@
 */
 
 import { onceDefined } from "@shared/onceDefined";
-import electron, { app, BrowserWindowConstructorOptions, Menu } from "electron";
+import electron, { app, BrowserWindowConstructorOptions, Menu, nativeImage } from "electron";
 import { dirname, join } from "path";
 
 import { RendererSettings } from "./settings";
@@ -127,6 +127,14 @@ if (!IS_VANILLA) {
             process.env.DISCORD_PRELOAD = original;
 
             super(options);
+
+            if (isMainWindow) {
+                try {
+                    const iconPath = join(dirname(require.main!.filename), "lightvate", "icon.png");
+                    const icon = nativeImage.createFromPath(iconPath);
+                    if (!icon.isEmpty()) this.setIcon(icon);
+                } catch { /* icon not found, skip */ }
+            }
 
             if (disableMinSize) {
                 // Disable the Electron call entirely so that Discord can't dynamically change the size
