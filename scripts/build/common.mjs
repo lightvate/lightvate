@@ -52,7 +52,7 @@ export const gitHash = process.env.LIGHTVATE_HASH || execSync("git rev-parse HEA
 
 export const banner = {
     js: `
-// Equicord ${gitHash}
+// Lightvate ${gitHash}
 // Standalone: ${IS_STANDALONE}
 // Platform: ${IS_STANDALONE === false ? process.platform : "Universal"}
 // Updater Disabled: ${IS_UPDATER_DISABLED}
