@@ -1,0 +1,55 @@
+name: Release Browser Extension
+on:
+    push:
+        tags:
+            - v*
+
+env:
+    FORCE_COLOR: true
+
+permissions:
+    contents: read
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v7
+
+            - name: Setup PNPM
+              uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
+              with:
+                  runtime: node@v24
+                  require-lockfile: true
+
+            - name: Build web
+              run: pnpm buildWebStandalone
+
+            - name: Create sources zip
+              run: zip -r dist/extension-sources.zip . -x "node_modules/*" -x "dist/*" -x
+                  ".git/*"
+
+            - name: Publish extension
+              if: vars.ACT == 'false'
+              run: pnpx @equicord/publish-browser-extension@latest
+                  --chrome-zip dist/extension-chrome.zip
+                  --firefox-zip dist/extension-firefox.zip
+                  --firefox-sources-zip dist/extension-sources.zip
+                  --edge-zip dist/extension-chrome.zip
+                  #--opera-zip dist/extension-chrome.zip
+              env:
+                  CHROME_API_VERSION: ${{ secrets.CHROME_API_VERSION }}
+                  CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+                  CHROME_PUBLISHER_ID: ${{ secrets.CHROME_PUBLISHER_ID }}
+                  CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL }}
+                  CHROME_SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.CHROME_SERVICE_ACCOUNT_PRIVATE_KEY }}
+                  EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+                  EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
+                  EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+                  FIREFOX_COMPATIBILITY: ${{ secrets.FIREFOX_COMPATIBILITY }}
+                  FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_EXTENSION_ID }}
+                  FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+                  FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
+                  #OPERA_PACKAGE_ID: ${{ secrets.OPERA_PACKAGE_ID }}
+                  #OPERA_SESSION_ID: ${{ secrets.OPERA_SESSION_ID }}
