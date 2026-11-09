@@ -20,7 +20,7 @@
 // @ts-check
 
 import { createPackage } from "@electron/asar";
-import { readdir, writeFile } from "fs/promises";
+import { copyFile, readdir, writeFile } from "fs/promises";
 import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
 
@@ -237,7 +237,9 @@ await Promise.all([
     writeFile("dist/equibop/package.json", JSON.stringify({
         name: "lightvate",
         main: "main.js"
-    }))
+    })),
+    copyFile("browser/icon.png", "dist/desktop/icon.png").catch(() => {}),
+    copyFile("browser/icon.png", "dist/equibop/icon.png").catch(() => {})
 ]);
 
 await Promise.all([

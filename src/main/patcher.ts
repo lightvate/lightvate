@@ -130,8 +130,7 @@ if (!IS_VANILLA) {
 
             if (isMainWindow) {
                 try {
-                    const iconPath = join(dirname(require.main!.filename), "lightvate", "icon.png");
-                    const icon = nativeImage.createFromPath(iconPath);
+                    const icon = nativeImage.createFromPath(join(__dirname, "icon.png"));
                     if (!icon.isEmpty()) this.setIcon(icon);
                 } catch { /* icon not found, skip */ }
             }
