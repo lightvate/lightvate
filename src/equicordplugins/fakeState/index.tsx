@@ -10,7 +10,7 @@ import definePlugin, { OptionType } from "@utils/types";
 import { findByPropsLazy } from "@webpack";
 import { FluxDispatcher } from "@webpack/common";
 
-const VoiceActions = findByPropsLazy("toggleSelfMute", "toggleSelfDeaf");
+const MediaActions = findByPropsLazy("toggleSelfMute", "toggleSelfDeaf");
 
 const settings = definePluginSettings({
     fakeMute: {
@@ -18,52 +18,44 @@ const settings = definePluginSettings({
         description: "Appear muted to others while still being able to speak.",
         default: false,
         restartNeeded: false,
-        onChange: () => applyFakeState()
+        onChange() {
+            MediaActions.toggleSelfMute();
+            MediaActions.toggleSelfMute();
+        }
     },
     fakeDeaf: {
         type: OptionType.BOOLEAN,
         description: "Appear deafened to others while still being able to hear.",
         default: false,
         restartNeeded: false,
-        onChange: () => applyFakeState()
+        onChange() {
+            MediaActions.toggleSelfDeaf();
+            MediaActions.toggleSelfDeaf();
+        }
     }
 });
 
-function applyFakeState() {
-    FluxDispatcher.dispatch({ type: "AUDIO_SET_SELF_MUTE", mute: settings.store.fakeMute });
-    FluxDispatcher.dispatch({ type: "AUDIO_SET_SELF_DEAF", deaf: settings.store.fakeDeaf });
-}
-
 export default definePlugin({
     name: "FakeState",
-    description: "Appear muted or deafened to others in voice channels without actually affecting your audio.",
+    description: "Appear muted or deafened to others in voice channels without affecting your own audio.",
     authors: [EquicordDevs.thororen],
+    tags: ["voice", "mute", "deafen", "fake"],
     settings,
 
     patches: [
         {
-            // Intercept outgoing voice state gateway payload to override self_mute
-            find: '"self_mute"',
+            find: "updateVoiceStateForChannel",
             replacement: {
-                match: /self_mute:(\i\.isSelfMute\(\))/,
-                replace: "self_mute:($self.isFakeMute()||$1)"
+                match: /(self_mute\s*:)\s*(\i\.isSelfMute\b[^,}]*)/,
+                replace: "$1($self.settings.store.fakeMute||$2)"
             }
         },
         {
-            // Intercept outgoing voice state gateway payload to override self_deaf
-            find: '"self_deaf"',
+            find: "updateVoiceStateForChannel",
             replacement: {
-                match: /self_deaf:(\i\.isSelfDeaf\(\))/,
-                replace: "self_deaf:($self.isFakeDeaf()||$1)"
+                match: /(self_deaf\s*:)\s*(\i\.isSelfDeaf\b[^,}]*)/,
+                replace: "$1($self.settings.store.fakeDeaf||$2)"
             }
         }
-    ],
-
-    isFakeMute(): boolean {
-        return settings.store.fakeMute;
-    },
-
-    isFakeDeaf(): boolean {
-        return settings.store.fakeDeaf;
-    }
+    ]
 });

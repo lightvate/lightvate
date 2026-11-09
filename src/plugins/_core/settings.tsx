@@ -187,7 +187,7 @@ export default definePlugin({
             buildEntry({
                 key: "equicord_main",
                 title: "Lightvate",
-                panelTitle: "Equicord Settings",
+                panelTitle: "Lightvate Settings",
                 Component: VencordTab,
                 Icon: MainSettingsIcon
             }),
@@ -241,7 +241,7 @@ export default definePlugin({
         const equicordSection: SettingsLayoutNode = {
             key: "equicord_section",
             type: LayoutTypes.SECTION,
-            useTitle: () => "Equicord Settings",
+            useTitle: () => "Lightvate Settings",
             buildLayout: () => equicordEntries
         };
 
