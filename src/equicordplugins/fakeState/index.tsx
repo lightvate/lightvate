@@ -8,30 +8,22 @@ import { definePluginSettings } from "@api/Settings";
 import { EquicordDevs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { findByPropsLazy } from "@webpack";
-import { FluxDispatcher } from "@webpack/common";
 
-const MediaActions = findByPropsLazy("toggleSelfMute", "toggleSelfDeaf");
+const MediaEngine = findByPropsLazy("setLocalMute", "setLocalVolume");
+const SelfMediaOptions = findByPropsLazy("toggleSelfMute", "toggleSelfDeaf");
 
 const settings = definePluginSettings({
     fakeMute: {
         type: OptionType.BOOLEAN,
-        description: "Appear muted to others while still being able to speak.",
+        description: "Appear muted to others while still being able to speak locally.",
         default: false,
         restartNeeded: false,
-        onChange() {
-            MediaActions.toggleSelfMute();
-            MediaActions.toggleSelfMute();
-        }
     },
     fakeDeaf: {
         type: OptionType.BOOLEAN,
-        description: "Appear deafened to others while still being able to hear.",
+        description: "Appear deafened to others while still being able to hear locally.",
         default: false,
         restartNeeded: false,
-        onChange() {
-            MediaActions.toggleSelfDeaf();
-            MediaActions.toggleSelfDeaf();
-        }
     }
 });
 
@@ -44,17 +36,17 @@ export default definePlugin({
 
     patches: [
         {
-            find: "updateVoiceStateForChannel",
+            find: "self_mute",
             replacement: {
-                match: /(self_mute\s*:)\s*(\i\.isSelfMute\b[^,}]*)/,
-                replace: "$1($self.settings.store.fakeMute||$2)"
+                match: /self_mute:(\i)\.isSelfMute\(\)/,
+                replace: "self_mute:($self.settings.store.fakeMute||$1.isSelfMute())"
             }
         },
         {
-            find: "updateVoiceStateForChannel",
+            find: "self_mute",
             replacement: {
-                match: /(self_deaf\s*:)\s*(\i\.isSelfDeaf\b[^,}]*)/,
-                replace: "$1($self.settings.store.fakeDeaf||$2)"
+                match: /self_deaf:(\i)\.isSelfDeaf\(\)/,
+                replace: "self_deaf:($self.settings.store.fakeDeaf||$1.isSelfDeaf())"
             }
         }
     ]
