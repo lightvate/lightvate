@@ -6,87 +6,149 @@ Lightvate is a Discord client mod based on [Vencord](https://github.com/Vendicat
 
 ### Included Plugins
 
-Lightvate includes all plugins from both Vencord and Equicord.
+Lightvate includes all plugins from both Vencord and Equicord — over 300+ plugins total.
+
+---
+
+## After Installing
+
+Once Lightvate is injected, **Discord's window appearance stays the same by design** — Lightvate works inside Discord, not on top of it.
+
+To confirm it's working and access all features:
+
+1. Open Discord.
+2. Go to **User Settings** (⚙️ gear icon, bottom-left).
+3. Scroll down in the sidebar — you will see a **Lightvate** section with:
+   - **Plugins** — enable/disable and configure plugins.
+   - **Themes** — load custom CSS themes.
+   - **Updater** — keep Lightvate up to date.
+   - **Backup & Restore** — save your settings.
+
+> The system tray icon will also show the Lightvate logo when Discord is minimized.
+
+---
+
+## Managing Plugins
+
+### Enabling Built-in Plugins
+
+1. Open Discord → Settings → **Lightvate** → **Plugins**.
+2. Browse the list of 300+ plugins.
+3. Click the toggle next to any plugin to enable or disable it.
+4. Some plugins have a ⚙️ settings icon — click it to configure them.
+
+### Installing Custom (User) Plugins
+
+1. In Settings → Lightvate → Plugins, enable the **UserPlugins** plugin (or **UserpluginInstaller**).
+2. Once enabled, a new option appears to load `.js` or `.ts` plugin files from your computer.
+3. Place your custom plugin file anywhere on your disk.
+4. Click **Load Plugin** and select the file.
+
+> Custom plugins are loaded from your local disk and are not bundled with Lightvate.
+
+### Popular Built-in Plugin Categories
+
+| Category | Examples |
+|---|---|
+| Chat | BetterRoleDot, MessageLogger, ReplyTimestamp |
+| Voice | VoiceDownload, SilentTyping, PushToTalk |
+| UI | FullSearchContext, GreetStickerPicker, NoDevtoolsWarning |
+| Nitro | FakeNitro, IgnoreActivities |
+| Privacy | AnonymiseFileNames, NoTypingAnimation |
+| Fun | GifPaste, Snowfall, Translate |
+
+---
 
 ## Installing
 
-### Manual Install (Recommended)
+### Build & Inject from Source (Windows)
 
-1. Download the latest `desktop.asar` from the [Releases](https://github.com/lightvate/lightvate/releases/latest) page.
-2. Find your Discord installation's `resources` folder:
-   - **Windows:** `%LocalAppData%\Discord\resources`
-   - **macOS:** `/Applications/Discord.app/Contents/Resources`
-   - **Linux:** `/opt/discord/resources` or `/usr/lib/discord/resources`
-3. Rename the existing `app.asar` to `_app.asar` (backup).
-4. Create a folder named `lightvate` inside `resources` and place `desktop.asar` inside it.
-5. Replace `app.asar` with the loader from [Releases](https://github.com/lightvate/lightvate/releases/latest) (`app.asar` loader file).
-6. Restart Discord.
+**Requirements:** [Git](https://git-scm.com/download) and [Node.JS LTS](https://nodejs.org/en/download)
 
-### Build & Inject from Source
+**Step 1 — Install pnpm** (open a new terminal after):
 
-> See **Building Lightvate from Source** below.
-
-## Uninstalling
-
-1. Remove the `lightvate` folder from Discord's `resources` directory.
-2. Delete the modified `app.asar`.
-3. Rename `_app.asar` back to `app.asar`.
-4. Restart Discord.
-
-## Building Lightvate from Source
-
-### Dependencies
-
-[Git](https://git-scm.com/download) and [Node.JS LTS](https://nodejs.dev/en/) are required.
-
-Install `pnpm`:
-
-> :exclamation: This next command may need to be run as admin/root depending on your system, and you may need to close and reopen your terminal for pnpm to be in your PATH.
-
-```shell
-npm i -g pnpm
+```cmd
+powershell -c "iwr https://get.pnpm.io/install.ps1 -useb | iex"
 ```
 
-> :exclamation: **IMPORTANT** Make sure you aren't using an admin/root terminal from here onwards. It **will** mess up your Discord/Lightvate instance and you **will** most likely have to reinstall.
+> Open a **new** terminal window after this step.
 
-Clone Lightvate:
+**Step 2 — Clone and build:**
+
+```cmd
+git clone https://github.com/lightvate/lightvate
+cd lightvate
+pnpm install --frozen-lockfile
+set LIGHTVATE_REMOTE=https://github.com/lightvate/lightvate && pnpm build
+```
+
+**Step 3 — Inject into Discord:**
+
+```cmd
+pnpm inject
+```
+
+> :exclamation: **Do not run as Administrator** — it will break your Discord installation.
+
+**Step 4 — Restart Discord.** Done!
+
+### macOS / Linux
 
 ```shell
 git clone https://github.com/lightvate/lightvate
 cd lightvate
-```
-
-Install dependencies:
-
-```shell
 pnpm install --frozen-lockfile
-```
-
-Build Lightvate:
-
-```shell
 LIGHTVATE_REMOTE=https://github.com/lightvate/lightvate pnpm build
-```
-
-Inject Lightvate into your desktop client:
-
-```shell
 pnpm inject
 ```
 
-Build Lightvate for web:
+---
+
+## Uninstalling
+
+```cmd
+pnpm uninject
+```
+
+Or manually:
+1. Go to `%LocalAppData%\Discord\resources` (Windows).
+2. Delete the modified `app.asar`.
+3. Rename `_app.asar` back to `app.asar`.
+4. Restart Discord.
+
+---
+
+## Updating
+
+To update Lightvate after a new release:
+
+```cmd
+cd lightvate
+git pull
+pnpm install --frozen-lockfile
+set LIGHTVATE_REMOTE=https://github.com/lightvate/lightvate && pnpm build
+pnpm inject
+```
+
+---
+
+## Browser Extension
 
 ```shell
 pnpm buildWeb
 ```
 
-After building Lightvate's web extension, locate the appropriate ZIP file in the `dist` directory and follow your browser's guide for installing custom extensions, if supported.
+After building, locate the ZIP file in the `dist` directory and load it as an unpacked extension in your browser's extension settings.
 
-Note: Firefox extension zip requires Firefox for developers.
+> Firefox extension ZIP requires Firefox Developer Edition.
+
+---
 
 ## Credits
 
 Thank you to [Vendicated](https://github.com/Vendicated) for creating [Vencord](https://github.com/Vendicated/Vencord) and the [Equicord](https://github.com/Equicord/Equicord) team for their work that Lightvate is built upon.
+
+---
 
 ## Disclaimer
 
@@ -98,9 +160,9 @@ Mentioning it does not imply any affiliation with or endorsement by Discord Inc.
 
 Client modifications are against Discord's Terms of Service.
 
-However, Discord is pretty indifferent about them and there are no known cases of users getting banned for using client mods! So you should generally be fine as long as you don't use plugins that implement abusive behaviour. But no worries, all inbuilt plugins are safe to use!
+However, Discord is pretty indifferent about them and there are no known cases of users getting banned for using client mods. You should generally be fine as long as you don't use plugins that implement abusive behaviour. All built-in plugins are safe to use.
 
-Regardless, if your account is essential to you and getting disabled would be a disaster for you, you should probably not use any client mods (not exclusive to Lightvate), just to be safe.
+Regardless, if your account is essential to you and getting disabled would be a disaster, you should probably not use any client mods (not exclusive to Lightvate), just to be safe.
 
 Additionally, make sure not to post screenshots with Lightvate in a server where you might get banned for it.
 
